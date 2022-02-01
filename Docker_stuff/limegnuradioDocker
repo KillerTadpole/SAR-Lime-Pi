@@ -1,0 +1,48 @@
+
+
+
+FROM registry.fedoraproject.org/fedora:latest
+
+#dependencies for LimeSuite
+RUN dnf -y --enablerepo=updates-testing install SoapySDR-devel
+RUN dnf -y install libi2c-devel \
+	libusbx-devel \
+	libusb-devel \
+	git \
+	g++ \
+	cmake \
+	libsq3-devel \
+	libsqlite3x-devel \
+	wxGTK3-devel \
+	freeglut-devel \
+	redhat-rpm-config
+
+#depencencies for gnuradio
+RUN dnf install gnuradio uhd
+RUN dnf install boost-devel \
+	swig \
+	gnuradio-devel \
+
+WORKDIR /home
+RUN git clone http://github.com/myriadrf/LimeSuite.git
+WORKDIR /home/LimeSuite
+RUN git checkout stable
+
+RUN mkdir builddir
+WORKDIR /home/LimeSuite/builddir
+RUN cmake ../
+RUN make -j$(nproc)
+
+RUN make install
+RUN touch /etc/ld.so.conf.d/LimeSuiteGUI.conf
+RUN echo "/usr/local/lib/" > /etc/ld.so.conf.d/LimeSuiteGUI.conf
+WORKDIR /usr/local/lib/
+RUN ldconfig
+WORKDIR /home/LimeSuite/udev-rules
+#RUN bash install.sh # this doesn't work in a container
+RUN cp 64-limesuite.rules /etc/udev/rules.d/ # we only need this line
+WORKDIR /
+
+
+
+
