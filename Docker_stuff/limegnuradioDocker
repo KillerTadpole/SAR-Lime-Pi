@@ -1,7 +1,5 @@
 
-
-
-FROM registry.fedoraproject.org/fedora:latest
+FROM registry.fedoraproject.org/fedora:33
 
 #dependencies for LimeSuite
 RUN dnf -y --enablerepo=updates-testing install SoapySDR-devel
@@ -18,13 +16,23 @@ RUN dnf -y install libi2c-devel \
 	redhat-rpm-config
 
 #depencencies for gnuradio
-RUN dnf install gnuradio uhd
-RUN dnf install boost-devel \
+RUN dnf -y install gnuradio uhd
+RUN dnf -y install boost-devel \
 	swig \
 	gnuradio-devel \
+	log4cpp \
+	log4cpp-devel \
+	gmp \
+	gmp-devel \
+	python3-devel \
+	mpir \
+	mpir-devel \
+	doxygen
+
+RUN mkdir /home/SAR-Lime-Pi
 
 WORKDIR /home
-RUN git clone http://github.com/myriadrf/LimeSuite.git
+RUN git clone https://github.com/myriadrf/LimeSuite.git/
 WORKDIR /home/LimeSuite
 RUN git checkout stable
 
@@ -41,8 +49,29 @@ RUN ldconfig
 WORKDIR /home/LimeSuite/udev-rules
 #RUN bash install.sh # this doesn't work in a container
 RUN cp 64-limesuite.rules /etc/udev/rules.d/ # we only need this line
-WORKDIR /
 
+# change LimeSuiteConfig.cmake so gr-limesdr looks in the right directory
+# for the LimeSuite library
+WORKDIR /home/LibeSuite/builddir
+RUN printf ':31\rf$f$D:x\r' > config.keys
+RUN vi -s config.keys /usr/local/lib64/cmake/LimeSuite/LimeSuiteConfig.cmake
+
+WORKDIR /home
+RUN git clone https://github.com/myriadrf/gr-limesdr/
+WORKDIR /home/gr-limesdr
+RUN git checkout gr-3.8
+RUN mkdir build
+WORKDIR /home/gr-limesdr/build
+RUN cmake ..
+RUN printf ':135\rA.0\x03\x03:x\r' > liborc.keys
+RUN vi -s liborc.keys lib/CMakeFiles/gnuradio-limesdr.dir/build.make
+# RUN make
+# RUN make install
+# RUN ldconfig
+# 
+# 
+# 
+# WORKDIR /
 
 
 
