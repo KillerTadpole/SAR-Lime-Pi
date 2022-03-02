@@ -14,10 +14,16 @@ RUN dnf -y install libi2c-devel \
 	libsqlite3x-devel \
 	wxGTK3-devel \
 	freeglut-devel \
-	redhat-rpm-config
+	redhat-rpm-config \
+	armadillo
 
 WORKDIR /home
-RUN git clone http://github.com/myriadrf/LimeSuite.git
+
+#RUN wget http://sourceforge.net/projects/arma/files/armadillo-10.8.2.tar.xz
+#RUN tar -xvf armadillo-10.8.2.tar.xz
+#RUN rm -rf armadillo-10.8.2.tar.xz
+
+RUN git clone https://github.com/myriadrf/LimeSuite.git
 WORKDIR /home/LimeSuite
 RUN git checkout stable
 
