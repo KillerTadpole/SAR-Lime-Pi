@@ -15,7 +15,8 @@ RUN dnf -y install libi2c-devel \
 	wxGTK3-devel \
 	freeglut-devel \
 	redhat-rpm-config \
-	armadillo
+	armadillo \
+	armadillo-devel
 
 WORKDIR /home
 

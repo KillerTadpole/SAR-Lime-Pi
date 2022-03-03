@@ -13,7 +13,7 @@ podman run -it \
 	-v $SAR_LIME_PI_DIR:/home/SAR-Lime-Pi \
 	--group-add keep-groups\
 	--security-opt label=type:container_runtime_t \
-	$1
+	limen
 
 
 
