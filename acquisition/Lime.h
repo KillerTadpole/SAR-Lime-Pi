@@ -13,31 +13,39 @@
 class Lime
 {
 	size_t length;
-	SoapySDRDevice *sdr;
 	void validateCommand(int, std::string);
+ 	SoapySDRStream *rxStream;
+	std::complex<short>* Rx_buffs;
+	size_t RX_buff_len;
+ 	int flags; //flags set by receive operation
+ 	long long timeNs; //timestamp for receive buffer
 
 	public:
-		Lime(void);
-		~Lime(void);
-		void setSampleRateRx(size_t, double);
-		double getSampleRateRx(size_t);
-		void setSampleRateTx(size_t, double);
-		double getSampleRateTx(size_t);
-		void setFrequencyRx(size_t, double);
-		double getFrequencyRx(size_t);
-		void setFrequencyTx(size_t, double);
-		double getFrequencyTx(size_t);
-		void setAntennaRx(size_t, const char*);
-		std::string getAntennaRx(size_t);
-		void setAntennaTx(size_t, const char*);
-		std::string getAntennaTx(size_t);
-		void setGainRx(size_t, double);
-		double getGainRx(size_t);
-		void setGainTx(size_t, double);
-		double getGainTx(size_t);
-		void listStreamFormatsRx(size_t);
+	SoapySDRDevice *sdr;
+	Lime(void);
+	~Lime(void);
+	void setSampleRateRx(size_t, double);
+	double getSampleRateRx(size_t);
+	void setSampleRateTx(size_t, double);
+	double getSampleRateTx(size_t);
+	void setFrequencyRx(size_t, double);
+	double getFrequencyRx(size_t);
+	void setFrequencyTx(size_t, double);
+	double getFrequencyTx(size_t);
+	void setAntennaRx(size_t, const char*);
+	std::string getAntennaRx(size_t);
+	void setAntennaTx(size_t, const char*);
+	std::string getAntennaTx(size_t);
+	void setGainRx(size_t, double);
+	double getGainRx(size_t);
+	void setGainTx(size_t, double);
+	double getGainTx(size_t);
+	void listStreamFormatsRx(size_t);
 
-		void streamRx(size_t, std::complex<float>*);
+	void streamRx(size_t, std::complex<short>*);
+	void setupStreamRx(std::complex<short>*);
+	void closeStreamRx(void);
+
 };
 
 # endif

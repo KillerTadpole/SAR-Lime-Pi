@@ -131,10 +131,9 @@ void Lime::listStreamFormatsRx(size_t chan)
 
 //------------------------- Streaming ------------------------------
 
-void Lime::streamRx(size_t chan, std::complex<float>* buffer)
+void Lime::streamRx(size_t chan, std::complex<short>* buffer)
 {
- 	SoapySDRStream *rxStream;
-       	SoapySDRDevice_setupStream(sdr, &rxStream, SOAPY_SDR_RX, SOAPY_SDR_CF32, NULL, 0, NULL);
+       	SoapySDRDevice_setupStream(sdr, &rxStream, SOAPY_SDR_RX, SOAPY_SDR_CS16, NULL, 0, NULL);
  	if (rxStream == NULL)
  	{
 		printf("setupStream fail: %s\n", SoapySDRDevice_lastError());
@@ -147,6 +146,30 @@ void Lime::streamRx(size_t chan, std::complex<float>* buffer)
  	//shutdown the stream
  	SoapySDRDevice_deactivateStream(sdr, rxStream, 0, 0); //stop streaming
  	SoapySDRDevice_closeStream(sdr, rxStream);
+}
+
+void Lime::setupStreamRx(std::complex<short>* buffer, size_t buffer_len)
+{
+	Rx_buff_len = buffer_len;
+ 	Rx_buffs[] = {buffer}; //array of buffers
+       	SoapySDRDevice_setupStream(sdr, &rxStream, SOAPY_SDR_RX, SOAPY_SDR_CS16, NULL, 0, NULL);
+ 	if (rxStream == NULL)
+ 	{
+		printf("setupStream fail: %s\n", SoapySDRDevice_lastError());
+ 	}
+ 	SoapySDRDevice_activateStream(sdr, rxStream, 0, 0, 0); //start streaming
+}
+
+void Lime::closeStreamRx(void)
+{
+ 	//shutdown the stream
+ 	SoapySDRDevice_deactivateStream(sdr, rxStream, 0, 0); //stop streaming
+ 	SoapySDRDevice_closeStream(sdr, rxStream);
+}
+
+int Lime::readStreamRx()
+{
+ 	int ret = SoapySDRDevice_readStream(sdr, rxStream, Rx_buffs, buffer_len, &flags, &timeNs, 100000);
 }
 
 //------------------------- Streaming ------------------------------

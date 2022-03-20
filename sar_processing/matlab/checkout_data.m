@@ -2,18 +2,19 @@
 % addpath('sar_lib/')
 % addpath('.')
 % load('../data/DumpsterChirp2_16b50mhz256clen.mat')
-% fid = fopen('LimeRxData/256Chirp2048Tot_Krate5.8594e12_50MHzBW.wfm');
-% fid = fopen('50MHzchirp1536Samples_2048TotSamp.wfm');
-fid = fopen('50MHzchirp32Samples_2048TotSamp.wfm');
+
+% file_name = "../data/50MHzchirp32Samples_2048TotSamp.wfm";
+% file_name = "../data/LimeRxData/256Chirp2048Tot_Krate5.8594e12_50MHzBW.wfm";
+file_name = "../data/50MHzchirp1536Samples_2048TotSamp.wfm";
+
 IQ = reshape(IQ, [], 1);
-chirp_iq = fread(fid,'int16', 'ieee-be');
-chirp_iq = reshape(chirp_iq, 2,[]).';
-chirp = complex(chirp_iq(:,1), chirp_iq(:,2));
+
+chirp = GetChirpFrom_wfm(file_name);
 
 %% plot time domain
 % figure(1)
 % plot(real(IQ))
-% %% plot chirp
+% % plot chirp
 % figure(2)
 % plot(real(chirp(1:1536)))
 
@@ -27,11 +28,10 @@ chirp = complex(chirp_iq(:,1), chirp_iq(:,2));
 % plot(abs(IQ_fft))
 
 %% plot correlation
-chirp_len = 32;
-w = gausswin(chirp_len);
-corr_chirp = w .* chirp(1:chirp_len);
+w = gausswin(length(chirp));
+corr_chirp = w .* chirp;
 
-compressed = fft_corr(IQ, corr_chirp);
+compressed = fft_corr(corr_chirp, IQ);
 
 figure(23)
 plot(abs(compressed))

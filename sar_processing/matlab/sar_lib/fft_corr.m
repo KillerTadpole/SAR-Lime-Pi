@@ -42,7 +42,7 @@ A_corr(1:A_len, :) = A;
 B_corr(1:B_len, :) = B;
 
 % flip one of the inputs to make conv a correlation
-A_corr = conj(A_corr);
+A_corr = conj(flipud(A_corr));
 
 % compute time shift for frequency domain
 f = ((1:corr_len)-1) / corr_len;
