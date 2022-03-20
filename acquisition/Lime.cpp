@@ -151,7 +151,7 @@ void Lime::streamRx(size_t chan, std::complex<short>* buffer)
 void Lime::setupStreamRx(std::complex<short>* buffer, size_t buffer_len)
 {
 	Rx_buff_len = buffer_len;
- 	Rx_buffs[] = {buffer}; //array of buffers
+ 	Rx_buff = buffer;
        	SoapySDRDevice_setupStream(sdr, &rxStream, SOAPY_SDR_RX, SOAPY_SDR_CS16, NULL, 0, NULL);
  	if (rxStream == NULL)
  	{
@@ -169,7 +169,9 @@ void Lime::closeStreamRx(void)
 
 int Lime::readStreamRx()
 {
- 	int ret = SoapySDRDevice_readStream(sdr, rxStream, Rx_buffs, buffer_len, &flags, &timeNs, 100000);
+	void *buffs[] = {Rx_buff}; //array of buffers
+ 	int ret = SoapySDRDevice_readStream(sdr, rxStream, buffs, Rx_buff_len, &flags, &timeNs, 100000);
+	return ret;
 }
 
 //------------------------- Streaming ------------------------------

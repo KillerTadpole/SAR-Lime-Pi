@@ -2,11 +2,20 @@
 #include <armadillo>
 #include <iostream>
 #include <fstream>
+#include <signal.h>
 
+std::ofstream outfile;
+
+void my_handler(int signum)
+{
+	outfile.close();
+	printf("Caught signal %d\n",signum);
+	exit(1); 
+}
 
 int main(void)
 {
-	std::ofstream outfile;
+	signal (SIGINT,my_handler);
 	outfile.open("data.dat", std::ios::binary);
 
 	int buff_size = 10;
@@ -14,11 +23,10 @@ int main(void)
 
 	for (int i = 0; i < 10; i++)
 	{
-		buffer[i] = {3, 6};
-//		outfile.write(reinterpret_cast<const char*>(&buffer[i]), sizeof(std::complex<short>));
+		buffer[i] = {1, 6};
 	}
 outfile.write(reinterpret_cast<const char*>(&buffer), sizeof(std::complex<short>)*buff_size);
-	outfile.close();
+	while(1);
 }
 
 

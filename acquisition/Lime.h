@@ -15,8 +15,8 @@ class Lime
 	size_t length;
 	void validateCommand(int, std::string);
  	SoapySDRStream *rxStream;
-	std::complex<short>* Rx_buffs;
-	size_t RX_buff_len;
+	std::complex<short>* Rx_buff;
+	size_t Rx_buff_len;
  	int flags; //flags set by receive operation
  	long long timeNs; //timestamp for receive buffer
 
@@ -43,8 +43,9 @@ class Lime
 	void listStreamFormatsRx(size_t);
 
 	void streamRx(size_t, std::complex<short>*);
-	void setupStreamRx(std::complex<short>*);
+	void setupStreamRx(std::complex<short>*, size_t);
 	void closeStreamRx(void);
+	int readStreamRx(void);
 
 };
 

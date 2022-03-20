@@ -1,14 +1,24 @@
 
 #include "Lime.h"
 #include <fstream>
+#include <signal.h>
 //#include <armadillo>
 
+std::ofstream outfile;
+Lime lime;
 
+void my_handler(int signum)
+{
+	outfile.close();
+	lime.closeStreamRx();
+	printf("\nCaught signal %d\n",signum);
+	exit(signum); 
+}
 
 int main(void)
 {
-	std::cout << "\ntest\n\n";
-	Lime lime;
+	signal (SIGINT,my_handler); // define a handler for stoping the program
+
 	std::cout << "RX Sample rate " << lime.getSampleRateRx(0) << "\n";
 	std::cout << "TX Sample rate " << lime.getSampleRateTx(0) << "\n";
 	std::cout << "RX Antenna " << lime.getAntennaRx(0) << "\n";
@@ -23,17 +33,17 @@ int main(void)
 	lime.setAntennaRx(0, "LNAL");
 	lime.setGainRx(0, 20);
 	
-	std::ofstream outfile;
-	outfile.open("data.dat");
+	outfile.open("../sar_processing/data/data.dat", std::ios::binary);
 
-	int buff_size = 1024;
+	size_t buff_size = 1024;
 	std::complex<short> buffer[buff_size];
-	lime.streamRx(0, buffer);
-	for (int i = 0; i < 10; i++)
+	lime.setupStreamRx(buffer, buff_size);
+	int ret;
+	while(1)
 	{
-	outfile << buffer[i];
+		ret = lime.readStreamRx();
+		outfile.write(reinterpret_cast<const char*>(&buffer), sizeof(std::complex<short>)*ret);
 	}
-	outfile.close();
 }
 
 
