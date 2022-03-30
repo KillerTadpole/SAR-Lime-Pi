@@ -5,23 +5,22 @@ c = 3e8;
 start = 1;
 stop = chunk_size;
 [IQ, Fs] = getComplexSamps(wav_file, start, stop);
-rg_samps = floor(range_gate * 2 / c * Fs);
+rg_samps = range_gate * 2 / c * Fs;
 
 % get min value for cross talk peak
-compressed = fft_corr(corr_chirp, IQ);
+compressed = fft_corr(Icorr_chirp);
 figure(23)
 plot(abs(compressed))
 title("Select a height to capture peaks")
 [~, min_peak_hight] = ginput(1);
-close(23)
 
 fs = Fs;
 cnt = 1;
-M = [];
 while fs
     compressed = fft_corr(corr_chirp, IQ);
     [pks, inds] = findpeaks(abs(compressed),'MinPeakHeight', min_peak_hight);
     % average across chunk
+    clear('M')
     for i = 2:length(pks)-1
         A(i,:) = compressed(inds(i):inds(i)+rg_samps);
     end

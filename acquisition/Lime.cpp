@@ -169,7 +169,7 @@ void Lime::closeStreamRx(void)
 
 int Lime::readStreamRx()
 {
-	void *buffs[] = {Rx_buff}; //array of buffers
+	void *buffs[50] = {Rx_buff}; //array of buffers
  	int ret = SoapySDRDevice_readStream(sdr, rxStream, buffs, Rx_buff_len, &flags, &timeNs, 100000);
 	return ret;
 }
