@@ -1,5 +1,5 @@
 % peak parcer
-function [M, Fs] = peakParse(wav_file, corr_chirp, range_gate, chunk_size)
+function [M, Fs] = peakParse(wav_file, corr_chirp, range_gate, chunk_size, N_frames)
 % figure out chunck sizing
 c = 3e8;
 start = 1;
@@ -26,7 +26,12 @@ while fs
         A(i,:) = compressed(inds(i):inds(i)+rg_samps);
     end
     % add averaged chunk to data matrix
-    M(cnt,:) = mean(A);
+    M(cnt,:,:) = A(2:N_frames+1,:).';%mean(A);
+    if cnt == 6750
+        figure(23)
+        plot(abs(M(cnt,:,4)))
+        pause
+    end
     cnt = cnt+1;
     start = stop+1;
     stop = start + chunk_size - 1;
