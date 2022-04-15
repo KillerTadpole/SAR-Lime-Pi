@@ -2,14 +2,16 @@
 addpath('sar_lib')
 mph2mps = 0.44704;
 c = 3e8;
-Fc = 2.45e9;
+Fc = 2.475e9;
 
 % filename = '../data/wavOfSlimData.wav'; % undersampled azimuth
 % filename = '../data/15mphSARtrailerMedGain_keep40960_175Hzrep.wav';
-filename = '../data/15mphSARownHouseDir_keep40960_175Hzrep.wav';
+% filename = '../data/15mphSARownHouseDir_keep40960_175Hzrep.wav';
+% filename = '../data/15mphSARtrailerHighGain_keep40960_175Hzrep.wav';
+% filename = '../data/15mphSARTrailerFar_keep40960_175Hzrep.wav';
 
 short_chirp = GetChirpFrom_wfm('../data/the_chirp.wfm');
-max_dist = 200; % meters
+max_dist = 300; % meters
 chirps_per_chunk = 10;
 N_transmit_samps = 4096;
 chunk_size = N_transmit_samps * chirps_per_chunk;
@@ -17,6 +19,8 @@ N_frames = chirps_per_chunk - 3;
 [r_compressed, Fs] = peakParse(filename, short_chirp, max_dist, chunk_size, N_frames);
 range_gate_s = 0;
 
+% save data
+% save('15mphTrailerFar.mat', 'r_compressed');
 %% set constants
 car_speed = 15; % miles per hour
 % Tr = 1/20; % 20 Hz
@@ -45,12 +49,12 @@ xlabel('Range distance [m]')
 ylabel('Azimuth distance [m]')
 title('abs log part of Received Signal')
 
-%% Azmith compression
+% Azmith compression
 % make matched chirp filter for azimuth direction
-Ka = -2*Vr^2 * cos(theta3dB)^2 ./ (lambda * tau*c/2).';
+Ka = -2*Vr^2 ./ (lambda * tau*c/2).';
 az_chirp_len = 500; % pixles
 az_Tr = az_chirp_len*T_pr;
-f_start_az = az_Tr/2*(-Ka);
+f_start_az = az_Tr/2*(Ka);
 az_chirp = makeChirp(f_start_az, az_Tr, F_pr, Ka, 0).';
 
 % correlate matched chirp in azimuth
@@ -67,5 +71,7 @@ xlabel('Range distance [m]')
 % mesh(abs(az_compressed))
 % ylabel('Azimuth distance [m]')
 title('Magnitude of Azimuth compressed signal')
+
+
 
 
